@@ -35,7 +35,7 @@ func bootLogger() *slog.Logger {
 		slog.Group(
 			"app-info",
 			slog.String("version", version),
-			slog.String("server-id", os.Getenv("SERVER_ID")),
+			slog.String("server-id", os.Getenv("HOSTNAME")),
 		),
 	)
 }

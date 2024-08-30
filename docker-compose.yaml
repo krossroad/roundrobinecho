@@ -1,0 +1,13 @@
+version: "3"
+services:
+  echo:
+    build: .
+    environment:
+      - HTTP_ADDRESS=:6060
+    ports:
+      - "6061-6063:6060"
+    deploy:
+      replicas: 3
+    entrypoint: bash -c "air .air.toml"
+    volumes:
+      - .:/app
