@@ -8,6 +8,19 @@ services:
       - "6061-6063:6060"
     deploy:
       replicas: 3
-    entrypoint: bash -c "air .air.toml"
+    entrypoint: >
+      bash -c 'air .air.toml'
+    volumes:
+      - .:/app
+
+  roundrobin:
+    build: .
+    environment:
+      - HTTP_ADDRESS=:6060
+      - SERVICE_ADDRESSES=http://roundrobinecho-echo-1:6060,http://roundrobinecho-echo-2:6060,http://roundrobinecho-echo-3:6060
+    ports:
+      - "6060:6060"
+    entrypoint: >
+      bash -c 'air --build.cmd="go build -o ./tmp/roundrobin ./cmd/roundrobin/" --build.bin="tmp/roundrobin" .air.toml'
     volumes:
       - .:/app
