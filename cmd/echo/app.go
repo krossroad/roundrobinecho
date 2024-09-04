@@ -16,6 +16,19 @@ func (a *App) handleEcho(w http.ResponseWriter, r *http.Request) {
 		a.Error(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
+	defer func() {
+		a.Debug("request echoed")
+	}()
+
+	if r.Body == nil {
+		a.Error(w, http.StatusBadRequest, "empty request body")
+		return
+	}
+	for key, headers := range r.Header {
+		for _, header := range headers {
+			w.Header().Set(key, header)
+		}
+	}
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -30,17 +43,10 @@ func (a *App) handleEcho(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for key, headers := range r.Header {
-		for _, header := range headers {
-			w.Header().Set(key, header)
-		}
-	}
-
 	if _, err := w.Write(body); err != nil {
 		a.Error(w, http.StatusInternalServerError, "error writing response")
 		return
 	}
-	a.Debug("request echoed")
 }
 
 func (a *App) Error(w http.ResponseWriter, status int, message string) {
