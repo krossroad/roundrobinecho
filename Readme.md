@@ -1,4 +1,4 @@
-# Round-robin echo server
+# Round-robin echo server [![Go runners](https://github.com/krossroad/roundrobinecho/actions/workflows/go.yml/badge.svg)](https://github.com/krossroad/roundrobinecho/actions/workflows/go.yml)
 This application a simple API which distributes incoming request among number of available "echo servers" in round-robin fashion. Both round-robin and echo service is implemented in Go(v1.23).
 
 ## Getting started
