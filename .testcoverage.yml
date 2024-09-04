@@ -1,0 +1,13 @@
+profile: cover.out
+
+local-prefix: "github.com/krossroad/roundrobinecho"
+
+threshold:
+  file: 70
+  package: 70
+  total: 70
+
+exclude:
+  paths:
+    - "cmd/"
+    - "test/"
