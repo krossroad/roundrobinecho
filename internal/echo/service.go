@@ -22,6 +22,7 @@ type (
 		logger *slog.Logger
 		loadbalancer.LoadBalancer
 		healthCheckInterval time.Duration
+		httpClient          *http.Client
 	}
 
 	// OptSetter is a function that sets an option on the Service.
@@ -49,6 +50,11 @@ func NewService(log *slog.Logger, lb loadbalancer.LoadBalancer, setter ...OptSet
 func WithHealthCheckInterval(interval time.Duration) OptSetter {
 	return func(svc *echoService) {
 		svc.healthCheckInterval = interval
+	}
+}
+func WithHTTPClient(client *http.Client) OptSetter {
+	return func(svc *echoService) {
+		svc.httpClient = client
 	}
 }
 
@@ -88,12 +94,18 @@ func (svc *echoService) healthCheck(ctx context.Context) {
 			continue
 		}
 
-		resp, err := http.DefaultClient.Do(req)
-		if err != nil {
-			backend.SetAlive(false)
-		} else {
-			backend.SetAlive(true)
+		cl := svc.httpClient
+		if cl == nil {
+			cl = http.DefaultClient
 		}
-		defer resp.Body.Close()
+		resp, err := cl.Do(req)
+		if err == nil && resp.StatusCode == http.StatusOK {
+			backend.SetAlive(true)
+		} else {
+			backend.SetAlive(false)
+		}
+		if resp.Body != nil {
+			resp.Body.Close()
+		}
 	}
 }
