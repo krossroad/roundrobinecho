@@ -65,9 +65,6 @@ func TestService_Echo(t *testing.T) {
 }
 
 func TestService_Monitor(_ *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
 	log := slog.Default()
 
 	// Mock the health check for the backends
@@ -99,6 +96,7 @@ func TestService_Monitor(_ *testing.T) {
 
 	// Mock the responses for the health check requests
 	// Start monitoring
-	go svc.Monitor(ctx)
-	time.Sleep(2 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	svc.Monitor(ctx)
 }
