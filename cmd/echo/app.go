@@ -17,7 +17,6 @@ func (a *App) handleEcho(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		a.Error(w, http.StatusInternalServerError, "error reading request body")
@@ -29,6 +28,12 @@ func (a *App) handleEcho(w http.ResponseWriter, r *http.Request) {
 	if err := json.Unmarshal(body, &resp); err != nil {
 		a.Error(w, http.StatusBadRequest, "error parsing request body")
 		return
+	}
+
+	for key, headers := range r.Header {
+		for _, header := range headers {
+			w.Header().Set(key, header)
+		}
 	}
 
 	if _, err := w.Write(body); err != nil {
