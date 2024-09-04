@@ -11,3 +11,6 @@ exclude:
   paths:
     - "cmd/"
     - "test/"
+
+  packages:
+    - "github.com/krossroad/roundrobinecho/internal/logger"
