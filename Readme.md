@@ -16,7 +16,7 @@ docker-compose up -d
 ```
 
 ### How to test
-Once docker container are up and running, you can simply make curl (or any http client of your choice) request to the API. The `docker-compose` is setup to expose `http://localhost:6060/echo` to expose the API of concern.
+Once docker container are up and running, you can simply make curl (or any http client of your choice) request to the API. The `docker-compose` is setup to expose `http://localhost:6060/echo` as the API of concern.
 ```bash
 curl -X POST http://localhost:6060/echo -H 'Content-Type:application/json' \
   --data '{ "foo":"baar" }'
