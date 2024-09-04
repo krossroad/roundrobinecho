@@ -32,7 +32,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	echoSvc := echo.NewService(logger, rrLB, echo.WithHealthCheckInterval(30*time.Second))
+	echoSvc := echo.NewService(logger, rrLB, echo.WithHealthCheckInterval(15*time.Second))
 	go echoSvc.Monitor(ctx)
 
 	app := NewApp(logger, echoSvc)

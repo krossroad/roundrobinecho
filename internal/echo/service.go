@@ -68,20 +68,26 @@ func (svc *echoService) Echo(ctx context.Context, w http.ResponseWriter, r *http
 // status of each backend server in the load balancer.
 func (svc *echoService) Monitor(ctx context.Context) {
 	timer := time.NewTicker(svc.healthCheckInterval)
+	defer timer.Stop()
+
 	for {
-		for _, backend := range svc.Backends() {
-			_, err := http.Get(backend.HealthCheckURL())
-			if err != nil {
-				backend.SetAlive(false)
-			} else {
-				backend.SetAlive(true)
-			}
-		}
+		svc.healthCheck()
 
 		select {
 		case <-ctx.Done():
 			return
 		case <-timer.C:
+		}
+	}
+}
+
+func (svc *echoService) healthCheck() {
+	for _, backend := range svc.Backends() {
+		_, err := http.Get(backend.HealthCheckURL())
+		if err != nil {
+			backend.SetAlive(false)
+		} else {
+			backend.SetAlive(true)
 		}
 	}
 }

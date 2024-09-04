@@ -29,8 +29,7 @@ func main() {
 
 func bootHealthCheck() http.HandlerFunc {
 	checker := health.NewChecker(
-		health.WithCacheDuration(1*time.Second),
-		health.WithPeriodicCheck(7*time.Second, 5*time.Second, health.Check{
+		health.WithPeriodicCheck(5*time.Second, 0*time.Second, health.Check{
 			Name: "echo",
 			Check: func(ctx context.Context) error {
 				return nil
