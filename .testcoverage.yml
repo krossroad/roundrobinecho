@@ -13,4 +13,4 @@ exclude:
     - "test/"
 
   packages:
-    - "github.com/krossroad/roundrobinecho/internal/logger"
+    - "internal/logger"
