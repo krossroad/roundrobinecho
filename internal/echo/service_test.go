@@ -64,7 +64,7 @@ func TestService_Echo(t *testing.T) {
 	}
 }
 
-func TestService_Monitor(t *testing.T) {
+func TestService_Monitor(_ *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 

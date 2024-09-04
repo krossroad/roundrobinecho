@@ -22,7 +22,7 @@ type (
 		logger *slog.Logger
 		loadbalancer.LoadBalancer
 		healthCheckInterval time.Duration
-		httpClient 			*http.Client
+		httpClient          *http.Client
 	}
 
 	// OptSetter is a function that sets an option on the Service.

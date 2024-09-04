@@ -67,8 +67,6 @@ func TestEchoBackend_SetAlive(t *testing.T) {
 	}
 }
 
-
-
 func TestEchoBackend_HealthCheckURL(t *testing.T) {
 	uStr := "http://example.com/health"
 	u, _ := url.Parse("http://example.com")
@@ -83,7 +81,6 @@ func TestEchoBackend_HealthCheckURL(t *testing.T) {
 			t.Errorf("HealthCheckURL() = %v, want %v", got, uStr)
 		}
 	})
-
 }
 
 func TestEchoBackend_URL(t *testing.T) {

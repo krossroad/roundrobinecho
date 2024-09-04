@@ -28,11 +28,11 @@ func TestJSONContentTypeValidator(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			handler := middlewares.JSONContentTypeValidator(func(w http.ResponseWriter, r *http.Request) {
+			handler := middlewares.JSONContentTypeValidator(func(w http.ResponseWriter, _ *http.Request) {
 				w.WriteHeader(http.StatusOK)
 			})
 
-			req, err := http.NewRequest(http.MethodGet, "/", nil)
+			req, err := http.NewRequest(http.MethodGet, "/", nil) //nolint:noctx
 			if err != nil {
 				t.Fatal(err)
 			}
