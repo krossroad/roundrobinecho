@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"io"
 	"log/slog"
 	"net/http"
@@ -56,7 +57,7 @@ func TestApp_handleEcho(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			req, err := http.NewRequest(tt.method, "/echo", tt.body)
+			req, err := http.NewRequestWithContext(context.TODO(), tt.method, "/echo", tt.body)
 			if err != nil {
 				t.Fatal(err)
 			}

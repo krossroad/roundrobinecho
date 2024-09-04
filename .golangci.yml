@@ -1,0 +1,64 @@
+run:
+  go: "1.23"
+  timeout: 5m
+
+linters-settings:
+  gocyclo:
+    min-complexity: 20
+  lll:
+    line-length: 200
+  funlen:
+    lines: 125
+    statements: 125
+
+linters:
+  disable-all: true
+  enable:
+    - bodyclose
+    - dupl
+    - errcheck
+    - errorlint
+    - exhaustive
+    - funlen
+    - goconst
+    - gocritic
+    - gocyclo
+    - gofmt
+    - goimports
+    - revive
+    - goprintffuncname
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - lll
+    - makezero
+    - misspell
+    - nakedret
+    - nilerr
+    - noctx
+    - nolintlint
+    - prealloc
+    - staticcheck
+    - stylecheck
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - whitespace
+
+issues:
+  # Excluding configuration per-path, per-linter, per-text and per-source
+  exclude-dirs:
+    - test/mocks
+
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - gomnd
+        - lll
+        - funlen
+        - errcheck
+        - dupl
+        - gosec
+        - goconst

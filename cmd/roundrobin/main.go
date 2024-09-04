@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
@@ -23,13 +22,13 @@ func main() {
 	echoBackends, err := bootEchoBackends(serviceAddresses)
 	if err != nil {
 		logger.Error("failed to boot echo backends", "error", err)
-		os.Exit(1)
+		return
 	}
 
 	rrLB, err := lb.NewRoundRobin(logger, echoBackends)
 	if err != nil {
 		logger.Error("failed to create round-robin load-balancer", "error", err)
-		os.Exit(1)
+		return
 	}
 
 	echoSvc := echo.NewService(logger, rrLB, echo.WithHealthCheckInterval(15*time.Second))
@@ -40,7 +39,12 @@ func main() {
 	mux.HandleFunc("/echo", app.fanoutHandler)
 
 	logger.Info("starting round-robin server", "address", address)
-	if err := http.ListenAndServe(address, mux); err != nil {
+	srv := &http.Server{
+		Addr:        address,
+		Handler:     mux,
+		ReadTimeout: 5 * time.Second,
+	}
+	if err := srv.ListenAndServe(); err != nil {
 		logger.Error("server error", "error", err)
 	}
 }
