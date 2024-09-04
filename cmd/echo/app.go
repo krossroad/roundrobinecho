@@ -47,5 +47,5 @@ func (a *App) handleEcho(w http.ResponseWriter, r *http.Request) {
 func (a *App) Error(w http.ResponseWriter, status int, message string) {
 	w.WriteHeader(status)
 	respEnc := json.NewEncoder(w)
-	respEnc.Encode(map[string]interface{}{"error": message})
+	respEnc.Encode(map[string]interface{}{"error": message}) //nolint:errcheck
 }

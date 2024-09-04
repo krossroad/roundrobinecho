@@ -3,6 +3,7 @@ package loadbalancer
 import (
 	"fmt"
 	"log/slog"
+	"math"
 	"sync"
 	"sync/atomic"
 )
@@ -30,17 +31,20 @@ func NewRoundRobin(log *slog.Logger, backends []Backend) (LoadBalancer, error) {
 	}, nil
 }
 
-func (b *roundRobin) Backends() []Backend {
-	return b.backends
+func (rr *roundRobin) Backends() []Backend {
+	return rr.backends
 }
 
 // Next returns the next available backend in a round-robin manner.
 // It selects a backend from the list of backends based on the current counter value.
 // If all backends are down, it returns an error.
 func (rr *roundRobin) Next() (Backend, error) {
-	backendLen := len(rr.backends)
-	attempts := 0
+	if len(rr.backends) > math.MaxUint32 {
+		return nil, fmt.Errorf("too many backends")
+	}
 
+	attempts := uint32(0)
+	backendLen := uint32(len(rr.backends)) //nolint:gosec
 	rr.mu.Lock()
 	defer rr.mu.Unlock()
 	for {
@@ -50,7 +54,7 @@ func (rr *roundRobin) Next() (Backend, error) {
 
 		attempts++
 
-		i := rr.counter.Add(1) % uint32(backendLen)
+		i := rr.counter.Add(1) % backendLen
 		if rr.backends[i].Alive() {
 			return rr.backends[i], nil
 		}

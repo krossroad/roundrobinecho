@@ -19,5 +19,5 @@ func JSONContentTypeValidator(fn http.HandlerFunc) http.Handler {
 func writeError(w http.ResponseWriter, status int, message string) {
 	w.WriteHeader(status)
 	respEnc := json.NewEncoder(w)
-	respEnc.Encode(map[string]string{"error": message})
+	respEnc.Encode(map[string]string{"error": message}) //nolint:errcheck
 }

@@ -22,7 +22,13 @@ func main() {
 	mux.Handle("/echo", middlewares.JSONContentTypeValidator(app.handleEcho))
 	mux.HandleFunc("/health", bootHealthCheck())
 
-	if err := http.ListenAndServe(address, mux); err != nil {
+	srv := &http.Server{
+		Addr:        address,
+		Handler:     mux,
+		ReadTimeout: 5 * time.Second,
+	}
+
+	if err := srv.ListenAndServe(); err != nil {
 		logger.Error("server error", "error", err)
 	}
 }
@@ -31,7 +37,7 @@ func bootHealthCheck() http.HandlerFunc {
 	checker := health.NewChecker(
 		health.WithPeriodicCheck(5*time.Second, 0*time.Second, health.Check{
 			Name: "echo",
-			Check: func(ctx context.Context) error {
+			Check: func(_ context.Context) error {
 				return nil
 			},
 		}),

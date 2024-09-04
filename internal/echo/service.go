@@ -32,7 +32,7 @@ var _ Service = (*echoService)(nil)
 
 // NewService creates a new instance of the echo Service.
 // It takes a logger, a load balancer, and an optional list of OptSetters as parameters.
-func NewService(log *slog.Logger, lb loadbalancer.LoadBalancer, setter ...OptSetter) *echoService {
+func NewService(log *slog.Logger, lb loadbalancer.LoadBalancer, setter ...OptSetter) Service {
 	svc := &echoService{
 		logger:       log,
 		LoadBalancer: lb,
@@ -53,7 +53,7 @@ func WithHealthCheckInterval(interval time.Duration) OptSetter {
 }
 
 // Echo forwards the request to the next service in the round-robin list.
-func (svc *echoService) Echo(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+func (svc *echoService) Echo(_ context.Context, w http.ResponseWriter, r *http.Request) error {
 	backend, err := svc.Next()
 	if err != nil {
 		return fmt.Errorf("Next(): %w", err)
@@ -71,7 +71,7 @@ func (svc *echoService) Monitor(ctx context.Context) {
 	defer timer.Stop()
 
 	for {
-		svc.healthCheck()
+		svc.healthCheck(ctx)
 
 		select {
 		case <-ctx.Done():
@@ -81,13 +81,19 @@ func (svc *echoService) Monitor(ctx context.Context) {
 	}
 }
 
-func (svc *echoService) healthCheck() {
+func (svc *echoService) healthCheck(ctx context.Context) {
 	for _, backend := range svc.Backends() {
-		_, err := http.Get(backend.HealthCheckURL())
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, backend.HealthCheckURL(), nil)
+		if err != nil {
+			continue
+		}
+
+		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			backend.SetAlive(false)
 		} else {
 			backend.SetAlive(true)
 		}
+		defer resp.Body.Close()
 	}
 }
