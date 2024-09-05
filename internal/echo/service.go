@@ -99,13 +99,15 @@ func (svc *echoService) healthCheck(ctx context.Context) {
 			cl = http.DefaultClient
 		}
 		resp, err := cl.Do(req)
-		if err == nil && resp.StatusCode == http.StatusOK {
-			backend.SetAlive(true)
-		} else {
+		if err != nil {
 			backend.SetAlive(false)
+			continue
 		}
-		if resp.Body != nil {
-			resp.Body.Close()
+		if resp.StatusCode == http.StatusOK {
+			backend.SetAlive(true)
+			continue
 		}
+		backend.SetAlive(false)
+		resp.Body.Close()
 	}
 }
